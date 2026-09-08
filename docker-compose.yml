@@ -1,0 +1,15 @@
+services:
+  voice-calling:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PLIVO_AUTH_ID: ${PLIVO_AUTH_ID}
+      PLIVO_AUTH_TOKEN: ${PLIVO_AUTH_TOKEN}
+      PLIVO_FROM_NUMBER: ${PLIVO_FROM_NUMBER}
+      PLIVO_ANSWER_URL: ${PLIVO_ANSWER_URL}
+      PLIVO_ANSWER_METHOD: ${PLIVO_ANSWER_METHOD:-GET}
+      HTTP_ADDR: ":8080"
+    # Prefer exporting vars or placing a local .env next to this file:
+    #   cp .env.example .env
+    # Compose automatically loads `.env` for ${VAR} substitution.

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voice-calling
+  labels:
+    app: voice-calling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: voice-calling
+  template:
+    metadata:
+      labels:
+        app: voice-calling
+    spec:
+      containers:
+        - name: voice-calling
+          image: voice-calling:latest
+          imagePullPolicy: IfNotPresent
+          args: ["-serve", "-http-addr", ":8080"]
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: voice-calling-config
+            - secretRef:
+                name: voice-calling-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
